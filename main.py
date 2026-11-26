@@ -17,16 +17,19 @@ assert 1 <= len(LINE) <= MAX_CHARS and LINE.strip(), "line must be 1-199 non-bla
 OUT = os.environ.get("MAKEFUN_OUT", "/output")
 
 
-def main():
+def clear_output():
     os.makedirs(OUT, exist_ok=True)
-    for name in os.listdir(OUT):
-        path = os.path.join(OUT, name)
-        if os.path.isdir(path):
-            shutil.rmtree(path)
+    for entry in os.scandir(OUT):
+        if entry.is_dir():
+            shutil.rmtree(entry.path)
         else:
-            os.remove(path)
-    with open(os.path.join(OUT, "entry.txt"), "w", encoding="utf-8") as f:
-        f.write(LINE)
+            os.unlink(entry.path)
+
+
+def main():
+    clear_output()
+    with open(os.path.join(OUT, "entry.txt"), "w", encoding="utf-8") as handle:
+        handle.write(LINE)
 
 
 if __name__ == "__main__":
